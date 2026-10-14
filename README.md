@@ -221,6 +221,15 @@ Browser ──HTTP──▶ Express ──▶ routes ──▶ services ──�
 SkillSwap needs one Node 22+ process and a MongoDB database. A reverse proxy must forward WebSocket
 upgrades for `/socket.io`.
 
+**On Render**
+
+[`render.yaml`](render.yaml) is a Render Blueprint for the public demo: one free Docker web service
+with a generated `JWT_SECRET` and demo mode on. Create a free MongoDB Atlas cluster, then in Render
+choose **New → Blueprint**, pick this repository and paste the Atlas connection string as
+`MONGODB_URI`. Change the domain and URLs in the file to your own first. Free instances sleep when
+idle and have no persistent disk, so the first visit after a quiet spell is slow and shared files
+do not survive a restart.
+
 **With Docker**
 
 ```bash
