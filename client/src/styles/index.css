@@ -1,0 +1,239 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/plus-jakarta-sans/wght.css';
+
+/*
+ * Design tokens. Components only use the semantic names below (bg-surface, text-muted, …),
+ * never raw palette values, so both themes stay in sync. Contrast of every pairing is checked by
+ * src/styles/tokens.test.ts.
+ */
+:root {
+  --bg: #f7f6f3;
+  --surface: #ffffff;
+  --surface-2: #efeeea;
+  --border: #dddbd5;
+  --border-strong: #8b8982;
+  --text: #1b1a18;
+  --text-muted: #57554f;
+  --primary: #0f6b5f;
+  --primary-hover: #0b574d;
+  --on-primary: #ffffff;
+  --teach: #0b5a50;
+  --teach-bg: #dcf2ec;
+  --learn: #7a4100;
+  --learn-bg: #fbecd3;
+  --danger: #b3261e;
+  --danger-bg: #fce9e7;
+  --on-danger: #ffffff;
+  --success: #17663f;
+  --success-bg: #e0f3e8;
+  --warning: #7a5200;
+  --warning-bg: #fbf0d4;
+  --focus: #0f6b5f;
+  /* Chart series colours, validated for colour-blind separation against --surface (see CLAUDE.md). */
+  --chart-1: #0b8f7c;
+  --chart-2: #c77700;
+  /* Code editor syntax colours. */
+  --syntax-keyword: #8a2be2;
+  --syntax-string: #0b6b3a;
+  --syntax-number: #9a4a00;
+  --syntax-comment: #6b6963;
+  --syntax-name: #0550ae;
+  --overlay: rgb(20 19 17 / 0.55);
+  --shadow: 0 12px 32px -12px rgb(20 19 17 / 0.25);
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #111413;
+  --surface: #191d1c;
+  --surface-2: #222726;
+  --border: #323836;
+  --border-strong: #7c8581;
+  --text: #eceeed;
+  --text-muted: #a7aeab;
+  --primary: #58d3bd;
+  --primary-hover: #7be0cd;
+  --on-primary: #04211c;
+  --teach: #86e3d1;
+  --teach-bg: #11322c;
+  --learn: #f3c583;
+  --learn-bg: #38290f;
+  --danger: #ff9a8f;
+  --danger-bg: #3d1714;
+  --on-danger: #2b0906;
+  --success: #7fdcaa;
+  --success-bg: #12301f;
+  --warning: #f0cf7a;
+  --warning-bg: #35290c;
+  --focus: #58d3bd;
+  --chart-1: #22a18c;
+  --chart-2: #c27a1e;
+  --syntax-keyword: #c9a0ff;
+  --syntax-string: #8fdca8;
+  --syntax-number: #f3c583;
+  --syntax-comment: #9aa29f;
+  --syntax-name: #8fc4ff;
+  --overlay: rgb(0 0 0 / 0.65);
+  --shadow: 0 12px 32px -12px rgb(0 0 0 / 0.7);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans:
+    'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-teach: var(--teach);
+  --color-teach-bg: var(--teach-bg);
+  --color-learn: var(--learn);
+  --color-learn-bg: var(--learn-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-on-danger: var(--on-danger);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-overlay: var(--overlay);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-overlay: var(--shadow);
+
+  --animate-fade-in: fade-in 160ms ease-out;
+  --animate-pop-in: pop-in 160ms ease-out;
+  --animate-skeleton: skeleton 1.4s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes skeleton {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    min-height: 100dvh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* One visible focus style for every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  dialog::backdrop {
+    background: var(--overlay);
+  }
+
+  /* Buttons are not links: keep the default cursor Tailwind 4 resets, but show intent on hover. */
+  button:not(:disabled),
+  [role='tab'],
+  summary {
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: 70rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Visually hidden until focused: the skip link. */
+@utility skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 600;
+  &:focus {
+    top: 0.5rem;
+  }
+}

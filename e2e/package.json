@@ -1,0 +1,17 @@
+{
+  "name": "@skillswap/e2e",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^24.0.0"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "^4.13.0"
+  }
+}

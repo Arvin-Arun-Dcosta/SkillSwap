@@ -1,0 +1,43 @@
+# Local MongoDB for development, or the whole app with `docker compose --profile app up --build`.
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    profiles: [app]
+    build: .
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - '5000:5000'
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/skillswap
+      # Required: set JWT_SECRET in your shell or an .env file next to this compose file.
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET (openssl rand -base64 48)}
+      PUBLIC_URL: ${PUBLIC_URL:-}
+      CLIENT_ORIGINS: ${PUBLIC_URL:-http://localhost:5000}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
+      DEMO_RESET_HOURS: ${DEMO_RESET_HOURS:-0}
+      ICE_SERVERS: ${ICE_SERVERS:-}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      COOKIE_SECURE: ${COOKIE_SECURE:-}
+    volumes:
+      - uploads:/data/uploads
+
+volumes:
+  mongo-data:
+  uploads:

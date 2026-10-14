@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SkillSwap code sandbox</title>
+  </head>
+  <body>
+    <!--
+      Runs code typed in a learning room. This page is only ever loaded in an iframe with
+      sandbox="allow-scripts", so it has an opaque origin: no cookies, no storage, no access to the
+      app. The server also serves it with a policy that blocks all network access. The code itself
+      runs in a worker so an infinite loop cannot freeze anything; the app removes the iframe on
+      timeout, which terminates the worker.
+    -->
+    <script>
+      (function () {
+        var WORKER_SOURCE = [
+          'var format = function (value) {',
+          '  if (typeof value === "string") return value;',
+          '  if (value instanceof Error) return value.name + ": " + value.message;',
+          '  try { var text = JSON.stringify(value, null, 2); return text === undefined ? String(value) : text; }',
+          '  catch (e) { return String(value); }',
+          '};',
+          'var send = function (level) {',
+          '  return function () {',
+          '    var parts = [];',
+          '    for (var i = 0; i < arguments.length; i++) parts.push(format(arguments[i]));',
+          '    self.postMessage({ type: "log", level: level, text: parts.join(" ") });',
+          '  };',
+          '};',
+          'self.console = { log: send("log"), info: send("log"), debug: send("log"), warn: send("warn"), error: send("error") };',
+          'self.onmessage = function (event) {',
+          '  try {',
+          '    var result = (0, eval)(event.data);',
+          '    if (result !== undefined) self.postMessage({ type: "log", level: "result", text: format(result) });',
+          '    self.postMessage({ type: "done" });',
+          '  } catch (error) {',
+          '    self.postMessage({ type: "log", level: "error", text: format(error) });',
+          '    self.postMessage({ type: "done" });',
+          '  }',
+          '};',
+        ].join('\n');
+
+        var worker = null;
+        window.addEventListener('message', function (event) {
+          if (event.source !== window.parent) return;
+          var data = event.data;
+          if (!data || data.type !== 'run' || typeof data.code !== 'string') return;
+          if (worker) worker.terminate();
+          var url = URL.createObjectURL(new Blob([WORKER_SOURCE], { type: 'text/javascript' }));
+          worker = new Worker(url);
+          URL.revokeObjectURL(url);
+          worker.onmessage = function (message) {
+            window.parent.postMessage(message.data, '*');
+          };
+          worker.onerror = function (error) {
+            window.parent.postMessage({ type: 'log', level: 'error', text: String(error.message || error) }, '*');
+            window.parent.postMessage({ type: 'done' }, '*');
+          };
+          worker.postMessage(data.code);
+        });
+        window.parent.postMessage({ type: 'ready' }, '*');
+      })();
+    </script>
+  </body>
+</html>
