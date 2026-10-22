@@ -34,3 +34,6 @@ Thumbs.db
 # Keys and certificates
 *.pem
 *.key
+
+# Personal interview notes, kept local
+interview.md
